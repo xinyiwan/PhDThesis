@@ -71,6 +71,27 @@ Check the PDF before every push:
 make docker && open Thesis.pdf
 ```
 
+### Building a single chapter
+
+Chapter `.tex` files are fragments — they start at `\chapter` and have no
+`\documentclass`, so `latexmk` cannot compile them directly. `build-chapter.sh`
+generates a throwaway root document (`temp_manuscript.tex`, gitignored) that
+reuses the whole preamble of `Thesis.tex` and imports just that one chapter.
+This is what the `% !TEX root = ../../../temp_manuscript.tex` comment at the top
+of each chapter refers to.
+
+```sh
+make docker-portfolio      # -> Portfolio.pdf
+make docker-chapter CHAPTER=Chapters/Mainmatter/Publications/Chapter01/Chapter01.tex
+```
+
+The PDF is written to the repository root and is gitignored. Native equivalents
+are `make portfolio` and `make chapter CHAPTER=...`.
+
+Cross-references to other chapters will show as `??` in a single-chapter build,
+since the other chapters are not part of the generated document. Always check
+the full `make docker` before pushing.
+
 The underlying command, if you prefer to run it by hand:
 
 ```sh

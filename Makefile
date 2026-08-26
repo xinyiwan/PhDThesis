@@ -9,7 +9,8 @@ DOCKER_RUN := docker run --rm -u "$$(id -u):$$(id -g)" -e HOME=/tmp \
 
 LATEXMK_ARGS := -pdf -file-line-error -interaction=nonstopmode
 
-.PHONY: thesis propositions all docker docker-propositions docker-lint shell clean distclean
+.PHONY: thesis propositions chapter portfolio all docker docker-propositions \
+	docker-chapter docker-portfolio docker-lint shell clean distclean
 
 ## --- Native build (needs a full local TeX Live with latexmk + biber) --------
 
@@ -18,6 +19,16 @@ thesis:
 
 propositions:
 	latexmk $(LATEXMK_ARGS) Propositions/Propositions.tex
+
+# Build one chapter on its own, e.g.
+#   make chapter CHAPTER=Chapters/Backmatter/Portfolio/Portfolio.tex
+# Chapter files have no \documentclass, so build-chapter.sh wraps them in a
+# generated root document that reuses the preamble of Thesis.tex.
+chapter:
+	./build-chapter.sh $(CHAPTER)
+
+portfolio:
+	./build-chapter.sh Chapters/Backmatter/Portfolio/Portfolio.tex
 
 all: thesis propositions
 
@@ -28,6 +39,13 @@ docker:
 
 docker-propositions:
 	$(DOCKER_RUN) latexmk $(LATEXMK_ARGS) Propositions/Propositions.tex
+
+# make docker-chapter CHAPTER=Chapters/Backmatter/Portfolio/Portfolio.tex
+docker-chapter:
+	$(DOCKER_RUN) ./build-chapter.sh $(CHAPTER)
+
+docker-portfolio:
+	$(DOCKER_RUN) ./build-chapter.sh Chapters/Backmatter/Portfolio/Portfolio.tex
 
 docker-lint:
 	$(DOCKER_RUN) chktex -q -l .chktexrc -v1 -I1 -H1 $(MAIN).tex
@@ -41,6 +59,7 @@ shell:
 
 clean:
 	@rm -rf *.acr *.alg *.glg *.gls *.out *.synctex *.toc *.acn *.aux *.bbl *.bcf *.blg *.dvi *.fdb_latexmk *.fls *.flg *.flo *.glo *.ist *.log *.run.xml *.synctex.gz
+	@rm -f temp_manuscript.*
 	@rm -rf Propositions/*.aux Propositions/*.bcf Propositions/*.blg Propositions/*.bbl \
 		Propositions/*.fls Propositions/*.fdb_latexmk Propositions/*.log Propositions/*.run.xml
 
