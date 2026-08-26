@@ -53,15 +53,54 @@ Chapters may open with a designed divider page: drop
 
 ## Building locally
 
-Requires a full TeX Live (memoir, biblatex + biber, glossaries, pgfplots) and
-`latexmk`. The glossary rules live in `.latexmkrc`.
+### With Docker (recommended, no TeX install needed)
+
+Uses `texlive/texlive:latest` — the same image as the CI workflow, so a local
+build that succeeds will also succeed on GitHub.
 
 ```sh
-latexmk -pdf Thesis.tex          # thesis
-latexmk -pdf Propositions/Propositions.tex
-make clean                       # remove auxiliary files
-./bibtest.sh                     # validate the .bib files with biber
+make docker                # build Thesis.pdf
+make docker-propositions   # build Propositions.pdf
+make docker-lint           # run chktex
+make shell                 # interactive shell in the container, for debugging
+```
+
+Check the PDF before every push:
+
+```sh
+make docker && open Thesis.pdf
+```
+
+The underlying command, if you prefer to run it by hand:
+
+```sh
+docker run --rm -u "$(id -u):$(id -g)" -e HOME=/tmp \
+  -v "$PWD":/thesis -w /thesis texlive/texlive:latest \
+  latexmk -pdf -file-line-error -interaction=nonstopmode Thesis.tex
+```
+
+`-u` keeps the generated files owned by you instead of `root`; `-e HOME=/tmp`
+is then needed because `/root` is no longer writable and `latexmk` wants a
+writable `$HOME`.
+
+### With a native TeX Live
+
+Requires a **full** TeX Live (memoir, biblatex + biber, glossaries, pgfplots,
+nag) and `latexmk` — BasicTeX/MacTeX-small is not enough. The glossary rules
+live in `.latexmkrc`.
+
+```sh
+make thesis
+make propositions
+./bibtest.sh                                 # validate the .bib files with biber
 chktex -l .chktexrc -v1 -I1 -H1 Thesis.tex   # lint
+```
+
+### Housekeeping
+
+```sh
+make clean       # remove auxiliary files
+make distclean   # also remove the generated PDFs
 ```
 
 Print vs digital output is controlled at the top of `Thesis.tex`:
