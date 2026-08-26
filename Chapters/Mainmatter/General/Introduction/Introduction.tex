@@ -1,0 +1,22 @@
+% Following magic comments allow for compilation of root file
+% !TEX root = ../../../../temp_manuscript.tex
+
+% Each chapter can start with a designed divider page. Drop a PDF named
+% IntroductionTitlePage.pdf (digital) / IntroductionTitlePageBleed.pdf (print)
+% in this folder and uncomment the block below.
+%\ifx\setbleed\empty
+%	\includepdf[pages=1, pagecommand={\thispagestyle{empty}}, fitpaper=true]{IntroductionTitlePage.pdf}
+%\else
+%	\includepdf[pages=1, pagecommand={\thispagestyle{empty}}, fitpaper=true]{IntroductionTitlePageBleed.pdf}
+%\fi
+\chapter{Introduction}\label{chap: introduction}
+\newpage
+% Count floats per chapter
+\counterwithin{figure}{chapter}
+\counterwithin{table}{chapter}
+
+\section{TODO: first section}
+TODO: write the introduction, citing sources like this \autocite{exampleKey2029}.
+
+\section{Thesis outline}
+TODO: outline referring to e.g. \autoref{chap: chapter01} and \autoref{chap: chapter02}.

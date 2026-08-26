@@ -1,0 +1,36 @@
+\documentclass{article}
+
+\usepackage[multiple]{footmisc}
+\usepackage[paperwidth=170mm, paperheight=240mm, inner=20mm, outer=20mm, top=25mm, bottom=20mm]{geometry}
+
+% Citations: full citation in footnote
+\usepackage[backend=biber, style=numeric, defernumbers]{biblatex}
+\addbibresource{PropositionsBib.bib}
+
+\DeclareBibliographyCategory{skipbibliography}
+\DeclareCiteCommand{\myfootcite}[\mkbibfootnote]
+{\usebibmacro{prenote}}
+{\addtocategory{skipbibliography}{\thefield{entrykey}}%
+	\usedriver
+	{\DeclareNameAlias{sortname}{default}}
+	{\thefield{entrytype}}}
+{\multicitedelim}
+{\usebibmacro{postnote}}
+
+\begin{document}
+	\thispagestyle{empty}
+	\begin{centering}
+		{\Large Propositions accompanying the thesis}\\
+		\vspace{2em}
+		\textbf{\LARGE TODO: Title of your thesis}\\
+		\Large TODO: Subtitle\\
+		\vspace{1em}
+		{\large by TODO: Your Name}\\
+	\end{centering}
+	\vspace{2em}
+
+	\begin{enumerate}
+		\item TODO: first proposition.
+		\item TODO: second proposition.
+	\end{enumerate}
+\end{document}

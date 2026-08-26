@@ -1,0 +1,106 @@
+name: Build thesis
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+# Needed to create releases with the default GITHUB_TOKEN
+permissions:
+  contents: write
+
+env:
+  MAIN_FILE: Thesis
+
+jobs:
+  lint:
+    name: LaTeX linter
+    runs-on: ubuntu-latest
+    # Style warnings should never block a build
+    continue-on-error: true
+    container: texlive/texlive:latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run chktex
+        run: |
+          chktex -q -v1 -I1 -H1 -l .chktexrc "$MAIN_FILE.tex" \
+            | tee chktex_output.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: linter-results
+          path: chktex_output.log
+
+  build:
+    name: Compile PDFs
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compile thesis
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: ${{ env.MAIN_FILE }}.tex
+          latexmk_use_xelatex: false
+          args: -pdf -file-line-error -halt-on-error -interaction=nonstopmode -pool-size=10000000
+          pre_compile: |
+            tex_config=$(kpsewhich texmf.cnf)
+            echo "main_memory=12435455" >> "$tex_config"
+            echo "pool_size=10000000" >> "$tex_config"
+            fmtutil-sys --all
+
+      - name: Compile propositions
+        uses: xu-cheng/latex-action@v3
+        with:
+          root_file: Propositions/Propositions.tex
+          args: -pdf -file-line-error -halt-on-error -interaction=nonstopmode
+
+      - name: Attach log files on failure
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: build-logs
+          path: |
+            *.log
+            *.bbl
+            *.blg
+
+      - name: Attach thesis PDF
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.MAIN_FILE }}
+          path: ${{ env.MAIN_FILE }}.pdf
+
+      - name: Attach propositions PDF
+        uses: actions/upload-artifact@v4
+        with:
+          name: Propositions
+          path: Propositions.pdf
+
+      # --- Releases -------------------------------------------------------
+      # Every push to main publishes a dated pre-release, so there is always a
+      # downloadable snapshot. Pushing a `v*` tag publishes a real release.
+      - name: Determine release metadata
+        if: github.event_name == 'push'
+        id: meta
+        run: |
+          if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            echo "tag=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+            echo "prerelease=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=$(date +'%Y-%m-%d_%HH%MM')" >> "$GITHUB_OUTPUT"
+            echo "prerelease=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create release
+        if: github.event_name == 'push'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.meta.outputs.tag }}
+          name: Release ${{ steps.meta.outputs.tag }}
+          prerelease: ${{ steps.meta.outputs.prerelease }}
+          files: |
+            ${{ env.MAIN_FILE }}.pdf
+            Propositions.pdf

@@ -1,0 +1,209 @@
+\ProvidesPackage{thesis}
+
+%%%%%%%%%%%%%%%%%%%%%%%
+% Ease of use packages %
+%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{import}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%
+% Math packages
+%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+% Martijn: for bolsymbol in math equations
+\usepackage{latexsym}
+\usepackage{amsthm}
+\usepackage{eqparbox}
+
+%%%%%%%%%%%%%%%%%%%%%%%
+% Graphic packages
+%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{standalone}
+\usepackage{tikzscale}
+\usepackage{xcolor}
+\usepackage[autopause]{animate}
+\usepackage[edges]{forest}
+\usepackage{ifthen}
+\usepackage{eso-pic}
+%\usepackage[pages=some,placement=top]{background}
+
+%%%%%%%%%%%%%%%%%%%%%%%
+% Tables
+%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{booktabs}
+\usepackage{makecell}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{arydshln}
+
+%%%%%%%%%%%%%%%%%%%%%%%
+% Bibliography
+%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[style=ieee,
+			citestyle=numeric,
+			backend=biber,
+			bibencoding=utf8,
+			defernumbers=true,
+			url=false,
+			isbn=true,
+			dashed=false,
+			autocite=plain,
+			useprefix=true,
+			sortcites=true,
+			maxbibnames=10]{biblatex}
+
+%%%%%%%%%%%%%%%%%%%%%%%
+% Hyperlink formatting
+%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[pdftex,
+            pdfusetitle,
+            pdfkeywords={radiomics, machine learning, automated machine learning, oncology, computer aided diagnosis, medical imaging, open-source},
+            % Martijn
+            colorlinks   = true, %Colours links instead of ugly boxes
+            urlcolor     = references, %Colour for external hyperlinks
+            linkcolor    = references, %blue, %Colour of internal links
+            citecolor   = references %blue %Colour of citations, could be ``red''
+            %hidelinks
+            ]{hyperref}
+
+% Martijn: \autoref should also capitalize sections, parts, chapters, etc same as figures and tables
+\AtBeginDocument{\def\sectionautorefname{Section}}
+\AtBeginDocument{\def\chapterautorefname{Chapter}}
+\AtBeginDocument{\def\partautorefname{Part}}
+\AtBeginDocument{\def\subsectionautorefname{Subsection}}
+
+% Martijn: advanced bookmark usage
+\usepackage{bookmark}
+
+%%%%%%%%%%%%%%%%%%%%%%%
+% Layout packages
+%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[capitalise, noabbrev]{cleveref}
+
+% In print mode we add a 3 mm bleed on the outside of the page.
+
+\newlength{\mybleed}
+\newlength{\mypaperwidth}
+\newlength{\mypaperheight}
+\ifx\setbleed\empty
+	\setlength{\mybleed}{0mm}
+\else
+	\setlength{\mybleed}{3mm}
+\fi
+
+\setlength{\mypaperwidth}{170mm + \mybleed + \mybleed}  % 170 mm + 2*bleed
+\setlength{\mypaperheight}{240mm + \mybleed + \mybleed}  % 170 mm + 2*bleed
+\usepackage[paperwidth=\mypaperwidth, paperheight=\mypaperheight, layoutsize={170mm,240mm}, layoutoffset={\mybleed, \mybleed}, bindingoffset=-\mybleed, inner=20mm, outer=20mm, top=25mm, bottom=20mm]{geometry}
+
+% Use this in digital mode
+%\usepackage[paperwidth=170mm, paperheight=240mm, inner=20mm, outer=20mm, top=25mm, bottom=20mm]{geometry}
+	
+\usepackage{changepage}
+% For sideways figures
+\usepackage{rotating}
+% this package is necessary for certain quotes in bibliography
+\usepackage{textcomp}
+\usepackage{titlesec}
+% Arbitrary font sizes
+\usepackage{lmodern}
+% Proper font encoding
+% Martijn: use palladio font
+\usepackage[sc]{mathpazo}
+%\linespread{1.05}         % Palladio needs more leading (space between lines)
+\usepackage[T1]{fontenc}
+% Slightly adjust some spacings to prevent overfull hbox
+\usepackage{microtype}
+% Make sure we have consistent quotations everywhere
+%\usepackage{dirtytalk}
+% Automatically format numbers
+\usepackage[separate-uncertainty = true]{siunitx}
+% Control look of figure and table captions
+% \usepackage{caption}
+\usepackage{subcaption}
+
+%%Martijn: Put caption of tables above table
+\let\newfloat\undefined  % Prevent error from using memoir
+\usepackage{floatrow}
+\floatsetup[table]{capposition=top}
+
+% For 1st, 2nd etc notation
+\usepackage[super]{nth}
+% Make sure figure/table never goes up a page
+\usepackage{float}
+% Allow text to wrap around the fig in CV
+\usepackage{wrapfig}
+% Turn dois into links
+\usepackage{doi}
+% For the headers and layout of pages
+\usepackage{fancyhdr}
+% To create outlines around letters
+\usepackage[outline]{contour}
+% Ensure that floats always appaer after their reference
+\usepackage{flafter}
+% To allow import of the pdf chapter pages
+\usepackage{pdfpages}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%
+% Appendices
+%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{appendix}
+\usepackage{chngcntr}
+\usepackage{etoolbox}
+
+% This package allows embedding of files in the pdf
+\usepackage{attachfile}
+
+%%%%%%%%%%%%%%%%%%%%%%%
+% Glossary & Acronyms
+%%%%%%%%%%%%%%%%%%%%%%%
+% We need this to not cause warnings form combination of memoir class and
+% Glossary package
+\let\printglossary\relax
+\let\theglossary\relax
+\let\endtheglossary\relax
+
+\usepackage[acronym,toc,section=chapter,nonumberlist]{glossaries}
+% make glossaries non-clickable
+\glsdisablehyper
+\newglossary[flg]{fake}{fls}{flo}{Fake Entries}
+\usepackage{glossaries-extra}
+\setabbreviationstyle[acronym]{long-short}
+% \renewcommand{\glossarypreamble}{\label{glossary}}
+\setglossarypreamble[main]{\label{glossary}}
+% For things that should not be printed
+
+\makeglossaries
+% \glsenableentrycount
+
+%%%%%%%%%%%%%%%%%%%%%%%
+% Set some acronyms for internal use.
+%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{acronym}
+
+%%%%%%%%%%%%%%%%%%%%%%%
+% Additions Martijn
+%%%%%%%%%%%%%%%%%%%%%%%
+% Be able to use roman numbers within text
+\usepackage{romannum}
+
+% Algorithms
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+
+% Include Python code
+% Enable inclusion of python code
+\usepackage{listings}
+
+% Longer tables than one page
+\usepackage{longtable}
+\usepackage{supertabular}
+
+% DIB
+\usepackage{framed,multirow}
+\usepackage{multicol}  % For multicolumn itemize/enumerate/description

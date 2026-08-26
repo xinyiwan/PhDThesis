@@ -1,0 +1,130 @@
+%%%%%%%%%%%%%%%%%%%%%%%
+% Commands
+%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\acrcaption}[1]{\acrshort{#1}: \acrlong{#1}}
+\newcommand{\toolbox}{\fontfamily{pcr}\selectfont}
+\newcommand{\per}[1]{\SI{#1}{\percent}}
+
+\newcommand{\meanconf}[3]{\num{#1} (\numrange{#2}{#3})}
+\newcommand{\meanp}[2]{\num{#1} (\num{#2})}
+\newcommand{\mpnumrange}[2]{\numrange[parse-numbers=false]{\num[parse-numbers=true]{#1}}{\num[parse-numbers=true]{#2}}}
+\newcommand{\pvalue}[1]{P\num{#1}}
+\newcommand{\numbersamples}[1]{N\num{#1}}
+\newcommand{\IQR}[2]{\num{#1} [\num{#2}]}
+\newcommand{\NA}{N/A}
+
+
+\NewDocumentCommand{\citeauthorref}{ O{} O{} m }{\citeauthor*[#1][#2]{#3}~\autocite{#3}}
+\newcommand\blfootnote[1]{%
+  \begingroup
+  \renewcommand\thefootnote{}\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \endgroup
+}
+
+\newcommand{\publishedas}[1]{
+\begin{refsection}[mypublications]
+\noindent
+% Martijn: no footcite, just cite on main page, and vfill first
+% \blfootnote{\fullcite[Based on: ][]{#1}}
+\vfill
+\fullcite[Based on: ][]{#1}
+\end{refsection}
+\newpage
+}
+
+% For shared first co authorships
+\newcommand{\publishedasco}[1]{
+	\begin{refsection}[mypublications]
+		\noindent
+		% Martijn: no footcite, just cite on main page, and vfill first
+		% \blfootnote{\fullcite[Based on: ][]{#1}}
+		\vfill
+		\fullcite[Based on: ][]{#1} \\
+		\noindent* indicates equal contributions
+	\end{refsection}
+	\newpage
+}
+
+
+%% This comment inserts an empty double page whenever
+\newcommand{\clearemptydoublepageodd}{%
+	\clearpage
+	{\null\pagestyle{empty}\cleartooddpage}%
+}
+\newcommand{\clearemptydoublepageeven}{%
+	\clearpage
+	{\null\pagestyle{empty}\cleartoevenpage}%
+}
+
+\newcommand{\refsubfigure}[1]{(\textbf{\protect\subref{#1}})}
+
+% For setting max bib names in a refsection
+\makeatletter
+\newcommand\Setmaxbibnames[1]{\renewcommand\blx@maxbibnames{#1}}
+\makeatletter
+
+% Martijn
+% Math
+\DeclareMathOperator*{\argmin}{argmin}
+\newcommand{\algorithmautorefname}{Algorithm}
+
+% Include Python code
+% Enable inclusion of python code
+\lstset{ %
+	backgroundcolor=\color{white},   % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}; should come as last argument
+	basicstyle=\footnotesize,        % the size of the fonts that are used for the code
+	breakatwhitespace=false,         % sets if automatic breaks should only happen at whitespace
+	breaklines=true,                 % sets automatic line breaking
+	captionpos=b,                    % sets the caption-position to bottom
+	commentstyle=\color{mygreen},    % comment style
+	emphstyle=\color{red},
+	deletekeywords={...},            % if you want to delete keywords from the given language
+	escapeinside={\%*}{*)},          % if you want to add LaTeX within your code
+	extendedchars=true,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
+	frame=single,	                   % adds a frame around the code
+	keepspaces=true,                 % keeps spaces in text, useful for keeping indentation of code (possibly needs columns=flexible)
+	keywordstyle=\color{blue},       % keyword style
+	language=Octave,                 % the language of the code
+	morekeywords={*,...},           % if you want to add more keywords to the set
+	numbers=none,                    % where to put the line-numbers; possible values are (none, left, right)
+	numbersep=5pt,                   % how far the line-numbers are from the code
+	numberstyle=\tiny\color{mygray}, % the style that is used for the line-numbers
+	rulecolor=\color{black},         % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+	showspaces=false,                % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+	showstringspaces=false,          % underline spaces within strings only
+	showtabs=false,                  % show tabs within strings adding particular underscores
+	stepnumber=1,                    % the step between two line-numbers. If it's 1, each line will be numbered
+	stringstyle=\color{mymauve},     % string literal style
+	tabsize=2,	                     % sets default tabsize to 2 spaces
+	%title=none,                   % show the filename of files included with \lstinputlisting; also try caption instead of title
+}
+\lstdefinelanguage{XMLfastr}
+{
+	morestring=[b]",
+	morestring=[s]{>}{<},
+	morecomment=[s]{<?}{?>},
+	stringstyle=\color{black},
+	identifierstyle=\color{darkblue},
+	keywordstyle=\color{cyan},
+	morekeywords={authors, targets}% list your attributes here
+}
+
+% Other
+\newcommand{\tableindent}{\textcolor{white}{\quad}}
+
+%% Use pdf as background for chapters. Uncomment this if you dont want to use these
+%\backgroundsetup{contents={\includegraphics{ChapterBackground.pdf}}
+\newcommand\BackgroundPic{
+	\put(-0.275\paperwidth + 2.5\mybleed,0){
+		\parbox[b][\paperheight]{\paperwidth}{%
+			\vfill
+			\centering
+			\ifx\setbleed\empty
+				\includegraphics[width=\paperwidth,height=\paperheight]{Settings/ChapterBackground.pdf}
+			\else
+				\includegraphics[width=\paperwidth,height=\paperheight]{Settings/ChapterBackgroundBleed.pdf}
+			\fi
+			
+			\vfill
+}}}

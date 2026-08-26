@@ -1,0 +1,190 @@
+\RequirePackage[l2tabu,orthodox]{nag}
+
+% Add a bleed of 3mm: needed for physical printing. Make empty for digital format
+\def\setbleed{}
+
+% Add cover image (Cover/Voorkant.pdf and Cover/Achterkant.pdf). Make empty for not adding the cover
+\def\setcover{}
+
+\documentclass[10pt,twoside,openright]{memoir}
+\pdfminorversion=7
+
+\usepackage{thesis}
+\usepackage[English]{ErasmusTitlePage}
+
+\addbibresource{Bibliographies/references.bib}
+\addsectionbib[label=mypublications]{Bibliographies/self.bib}
+
+\subimport{Settings/}{color_definitions.tex}
+\subimport{Settings/}{title_page.tex}
+\subimport{Settings/}{tikz_pgf.tex}
+\subimport{Settings/}{layout.tex}
+\subimport{Settings/}{glossary_items.tex}
+\subimport{Settings/}{acronyms.tex}
+\subimport{Settings/}{command.tex}
+\subimport{Settings/}{table.tex}
+
+% Add all glossary items, also those not used
+\glsaddall
+
+\begin{document}
+
+% Make sure words never exceed the line width
+\sloppy
+
+% We use uppercase Roman for the first few pages
+\pagenumbering{Roman}
+
+% Make the title page
+\begingroup
+\let\cleardoublepage\clearpage
+
+% Optionally, add a cover
+\ifx\setcover\empty
+	% Do Nothing
+\else
+	\includepdf[pages=1, pagecommand={\thispagestyle{empty}}, fitpaper=true]{Cover/Voorkant.pdf}
+\fi
+
+\maketitle
+\makecopyrightpage
+
+% Make the official Erasmus MC title page
+\pdfbookmark[0]{Title Page}{titlepage}
+\makethesispage
+\makecommitteepage
+\endgroup
+
+% This is to fix the page numbering
+\ifx\setcover\empty
+	\setcounter{page}{4}
+\else
+	\setcounter{page}{5}
+\fi
+
+% Optional dedication / quote at the start of the thesis
+\thispagestyle{empty}
+\pdfbookmark[0]{Dedication}{dedication}
+\vspace*{\fill}
+\begin{quote}
+	\centering
+	% TODO: your dedication, or delete this block
+	\textbf{}
+\end{quote}
+\vspace*{\fill}
+\stepcounter{page}
+
+\clearemptydoublepageodd
+
+\frontmatter
+\pdfbookmark[0]{Table of Contents}{toc}
+{
+	% Ensure table of contents is black despite overall hypersetup
+	\hypersetup{linkcolor=black}
+
+	% Start part with ``part'' in toc and change the indentation
+	\renewcommand{\cftpartfont}{\bfseries Part }
+	\cftsetindents{part}{1.5em}{0em}
+
+	\tableofcontents*
+}
+
+\mainmatter
+\thumbtrue
+
+\clearemptydoublepageeven
+
+% Introduction
+\subimport{Chapters/Mainmatter/General/Introduction/}{Introduction.tex}
+\cleartoevenpage
+
+\pagecolor{partbackground}
+\color{white}
+\newpage\null\thispagestyle{empty}\newpage
+\part{TODO: title of part one}\label{part: one}
+\pagecolor{white}
+\color{black}
+\addtocontents{toc}{\protect\mbox{}\protect\hrulefill\par}
+
+\subimport{Chapters/Mainmatter/Publications/Chapter01/}{Chapter01.tex}
+\clearemptydoublepageeven
+
+\pagecolor{partbackground}
+\color{white}
+\newpage\null\thispagestyle{empty}\newpage
+\part{TODO: title of part two}\label{part: two}
+\pagecolor{white}
+\color{black}
+\addtocontents{toc}{\protect\mbox{}\protect\hrulefill\par}
+
+\subimport{Chapters/Mainmatter/Publications/Chapter02/}{Chapter02.tex}
+\clearemptydoublepageeven
+
+% Add bookmark for the last, unnumbered part at part level
+\pdfbookmark[-1]{General discussion and summary}{discussion}
+
+\pagecolor{partbackground}
+\color{white}
+\newpage\null\thispagestyle{empty}\newpage
+\part*{General discussion and summary}\label{part: three}
+\pagecolor{white}
+\color{black}
+% Add unnumbered part to toc
+\addtocontents{toc}{\protect\textcolor{white}{easter egg to add white line}\par}  % White line
+\addtocontents{toc}{\protect\textcolor{white}{easter egg to add white line}\par}  % White line
+% NOTE: memoir cannot compute the page number of an unnumbered part, so it is
+% hardcoded here. Check and update it once the thesis is final.
+\addtocontents{toc}{\protect\contentsline{}{\bfseries General discussion and summary \protect\hfill}{\protect\bfseries 1}{chapter.3}\par}
+\addtocontents{toc}{\protect\mbox{}\protect\hrulefill\par}
+
+% Discussion chapter
+\subimport{Chapters/Mainmatter/General/Discussion/}{Discussion.tex}
+\clearemptydoublepageodd
+
+%% The chapters after this are not part of a part (pun intended), so correct the PDF bookmarks for that
+\bookmarksetup{startatroot}
+
+% Start of backmatter
+\backmatter
+\thumbfalse
+
+% Thesis summary
+\subimport{Chapters/Backmatter/Summary/}{Summary.tex}
+\clearemptydoublepageodd
+
+% Dutch summary
+\subimport{Chapters/Backmatter/Samenvatting/}{Samenvatting.tex}
+\clearemptydoublepageodd
+
+% Acknowledgements
+\subimport{Chapters/Backmatter/Acknowledgements/}{Acknowledgements.tex}
+\clearemptydoublepageodd
+
+% Curriculum Vitae
+\subimport{Chapters/Backmatter/CV/}{CV.tex}
+\clearemptydoublepageodd
+
+% Publications
+\subimport{Chapters/Backmatter/Publications/}{Publications.tex}
+\clearemptydoublepageodd
+
+% Portfolio
+\subimport{Chapters/Backmatter/Portfolio/}{Portfolio.tex}
+\clearemptydoublepageodd
+
+% Acronym list
+\printglossary[type=\acronymtype]
+\clearemptydoublepageodd
+
+% Bibliography
+\newrefcontext[sorting=none]
+\printbibliography[heading=bibintoc]
+
+%% Optionally, add back side
+\ifx\setcover\empty
+	% Do Nothing
+\else
+	\includepdf[pages=1, pagecommand={\thispagestyle{empty}}, fitpaper=true]{Cover/Achterkant.pdf}
+\fi
+
+\end{document}
