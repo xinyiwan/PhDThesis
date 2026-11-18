@@ -2,26 +2,25 @@
 % Defined environments
 %%%%%%%%%%%%%%%%%%%%%%%
 
-% Martijn: dont center, section header, no italics, no adjustwidth, span full page, no filling but just start at top of page
+% Abstract page: centered bold "Abstract" title, italic justified text, every
+% paragraph indented the same (so labels such as Background/Methods/Findings/
+% Interpretation line up), publication info (\publishedas) at the bottom.
 \newenvironment{ChapterAbstract}
 {
 % We reset all used abbreviations
 \glsresetall
-%\vspace*{\fill}
-%\begin{adjustwidth}{2cm}{2cm}
-% Add 'Abstract' as title
-%\begin{center}
-%\textbf{Abstract}
-\section*{Abstract}
-%\end{center}
-%\vspace{2em}
-% To italics and footnotesize
-%\itshape
-\small
+% The abstract always gets its own page
+\clearpage
+\vspace*{2em}
+\begin{center}\textbf{Abstract}\end{center}
+\vspace{0.5em}
+\small\itshape
+\setlength{\parindent}{1.5em}\setlength{\parskip}{0.6em}
+\noindent\hspace{\parindent}\ignorespaces
 }
 {
-%\end{adjustwidth}
-%\vspace{\fill}
+\par
+\printchapterpub
 % Afterwards we once again reset all abbreviations before using them in the text
 \glsresetall
 \clearpage
@@ -376,6 +375,9 @@ labelfont={bf},
 %width=0.9\textwidth
 width=\textwidth
 }
+
+% Table captions are set at normal size (like figure captions they stay bold-labelled)
+\captionsetup[table]{font=normalsize}
 
 % Martijn: Let sideways captions span full page width
 \AtBeginEnvironment{sidewaystable}{\captionsetup{width=1.5\textwidth}}

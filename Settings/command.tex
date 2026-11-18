@@ -22,28 +22,32 @@
   \endgroup
 }
 
-\newcommand{\publishedas}[1]{
-\begin{refsection}[mypublications]
-\noindent
-% Martijn: no footcite, just cite on main page, and vfill first
-% \blfootnote{\fullcite[Based on: ][]{#1}}
-\vfill
-\fullcite[Based on: ][]{#1}
-\end{refsection}
-\newpage
+% Publication info shown at the bottom of the chapter's Abstract page (see the
+% ChapterAbstract environment in layout.tex). \publishedas only stores the
+% .bib key (and an optional note line); the abstract environment prints it.
+% Usage:  \publishedas{key}
+%         \publishedas[* Contributed equally]{key}   % equal-contribution note
+\newcommand{\chapterpubkey}{}
+\newcommand{\chapterpubnote}{}
+\newcommand{\publishedas}[2][]{%
+	\gdef\chapterpubkey{#2}%
+	\gdef\chapterpubnote{#1}%
 }
+% Shared first authors: put a trailing * on the family names in self.bib
+\newcommand{\publishedasco}[1]{\publishedas[* Contributed equally]{#1}}
 
-% For shared first co authorships
-\newcommand{\publishedasco}[1]{
-	\begin{refsection}[mypublications]
-		\noindent
-		% Martijn: no footcite, just cite on main page, and vfill first
-		% \blfootnote{\fullcite[Based on: ][]{#1}}
+% Printed by ChapterAbstract; then resets so the next chapter starts clean
+\newcommand{\printchapterpub}{%
+	\ifx\chapterpubkey\empty\else
 		\vfill
-		\fullcite[Based on: ][]{#1} \\
-		\noindent* indicates equal contributions
-	\end{refsection}
-	\newpage
+		\begin{refsection}[mypublications]
+			\noindent\rule{0.4\textwidth}{0.4pt}\\[0.3em]
+			\noindent\footnotesize\upshape
+			\fullcite[Published as: ][]{\chapterpubkey}%
+			\ifx\chapterpubnote\empty\else\\[0.5em]\noindent\chapterpubnote\fi
+		\end{refsection}
+	\fi
+	\gdef\chapterpubkey{}\gdef\chapterpubnote{}%
 }
 
 
@@ -128,3 +132,13 @@
 			
 			\vfill
 }}}
+
+% Bibliography: the heading ("References") gets its own title page and the
+% reference list starts on the next page.
+\defbibheading{bibintoc}[\bibname]{%
+	\chapter*{#1}%
+	\phantomsection
+	\addcontentsline{toc}{chapter}{#1}%
+	\markboth{#1}{#1}%
+	\clearpage
+}
