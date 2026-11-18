@@ -39,7 +39,6 @@
 \usepackage{makecell}
 \usepackage{array}
 \usepackage{multirow}
-\usepackage{arydshln}
 
 %%%%%%%%%%%%%%%%%%%%%%%
 % Bibliography
@@ -203,6 +202,9 @@
 
 % Longer tables than one page
 \usepackage{longtable}
+% arydshln must be loaded after longtable, otherwise longtable rows are lost
+\usepackage{arydshln}
+\usepackage{lscape}% rotates the content only (keeps page size and header/footer layout), unlike pdflscape
 \usepackage{supertabular}
 
 % DIB
