@@ -9,8 +9,16 @@ DOCKER_RUN := docker run --rm -u "$$(id -u):$$(id -g)" -e HOME=/tmp \
 
 LATEXMK_ARGS := -pdf -file-line-error -interaction=nonstopmode
 
-.PHONY: thesis propositions chapter portfolio all docker docker-propositions \
-	docker-chapter docker-portfolio docker-lint shell clean distclean
+# Every chapter file is auto-discovered and gets two targets named after its
+# lowercased file name: `make introduction` and `make docker-introduction`
+# (likewise discussion, chapter01, chapter02, portfolio, summary, cv, ...).
+CHAPTER_FILES := $(wildcard Chapters/*/*/*.tex Chapters/*/*/*/*.tex)
+chapter_name = $(shell basename $(1) .tex | tr '[:upper:]' '[:lower:]')
+CHAPTER_NAMES := $(foreach f,$(CHAPTER_FILES),$(call chapter_name,$(f)))
+
+.PHONY: thesis propositions chapter all docker docker-propositions \
+	docker-chapter docker-lint shell clean distclean list-chapters \
+	$(CHAPTER_NAMES) $(addprefix docker-,$(CHAPTER_NAMES))
 
 ## --- Native build (needs a full local TeX Live with latexmk + biber) --------
 
@@ -27,9 +35,6 @@ propositions:
 chapter:
 	./build-chapter.sh $(CHAPTER)
 
-portfolio:
-	./build-chapter.sh Chapters/Backmatter/Portfolio/Portfolio.tex
-
 all: thesis propositions
 
 ## --- Docker build (no local TeX Live needed) -------------------------------
@@ -44,9 +49,6 @@ docker-propositions:
 docker-chapter:
 	$(DOCKER_RUN) ./build-chapter.sh $(CHAPTER)
 
-docker-portfolio:
-	$(DOCKER_RUN) ./build-chapter.sh Chapters/Backmatter/Portfolio/Portfolio.tex
-
 docker-lint:
 	$(DOCKER_RUN) chktex -q -l .chktexrc -v1 -I1 -H1 $(MAIN).tex
 
@@ -54,6 +56,19 @@ docker-lint:
 shell:
 	docker run --rm -it -u "$$(id -u):$$(id -g)" -e HOME=/tmp \
 		-v "$$(pwd)":/thesis -w /thesis $(DOCKER_IMAGE) bash
+
+## --- Per-chapter shortcuts (generated) -------------------------------------
+
+define CHAPTER_RULES
+$(call chapter_name,$(1)):
+	./build-chapter.sh $(1)
+docker-$(call chapter_name,$(1)):
+	$$(DOCKER_RUN) ./build-chapter.sh $(1)
+endef
+$(foreach f,$(CHAPTER_FILES),$(eval $(call CHAPTER_RULES,$(f))))
+
+list-chapters:
+	@printf '%s\n' $(CHAPTER_NAMES)
 
 ## --- Housekeeping ----------------------------------------------------------
 
@@ -65,4 +80,5 @@ clean:
 
 # Also remove the generated PDFs
 distclean: clean
-	@rm -f $(MAIN).pdf Propositions.pdf
+	@rm -f $(MAIN).pdf Propositions.pdf \
+		$(foreach f,$(CHAPTER_FILES),$(notdir $(basename $(f))).pdf)
